@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AppliedInformatics.LaboratoryWork3
 {
@@ -292,28 +293,52 @@ namespace AppliedInformatics.LaboratoryWork3
         /// <param name="graph">Граф, который обходит алгоритм</param>
         /// <param name="fromNode">Вершина, с которой начинается обход</param>
         /// <returns>Итератор</returns>
-        public static IEnumerable<int> Dijkstra(Graph graph, int fromNode)
+        public static SortedDictionary<int, int> Dijkstra(Graph graph, int fromNode)
         {
-            Stack<int> stack = new Stack<int>();
-            HashSet<int> visited = new HashSet<int>();
-            int node;
-            stack.Push(fromNode);
-            while (stack.Count > 0)
+
+            SortedDictionary<int, int> answer = new SortedDictionary<int, int>();
+
+            SortedDictionary<int, int> weight = new SortedDictionary<int, int>();
+
+            int node, minWeight;
+            weight[fromNode] = 0;
+
+            while (weight.Count > 0)
             {
-                node = stack.Pop();
-                if (!visited.Contains(node))
+                minWeight = weight.First().Value;
+                node = weight.First().Key;
+                foreach (KeyValuePair<int, int> w in weight)
                 {
-                    visited.Add(node);
-                    foreach (int n in graph.GetAdjacentNodes(node))
+                    if (w.Value < minWeight)
                     {
-                        if (!visited.Contains(n))
+                        minWeight = w.Value;
+                        node = w.Key;
+                    }
+                }
+
+                answer.Add(node, minWeight);
+                weight.Remove(node);
+
+
+                foreach (int n in graph.GetAdjacentNodes(node))
+                {
+                    if (!answer.ContainsKey(n))
+                    {
+                        if (weight.ContainsKey(n))
                         {
-                            stack.Push(n);
+                            weight[n] = Math.Min(weight[n], minWeight + graph.GetWeightEdge(node, n));
+                        }
+                        else
+                        {
+                            weight[n] = minWeight + graph.GetWeightEdge(node, n);
                         }
                     }
-                    yield return node;
                 }
+
+
             }
+
+            return answer;
         }
     }
 }

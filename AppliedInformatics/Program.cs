@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AppliedInformatics.LaboratoryWork3;
-
-namespace AppliedInformatics
-{    
+﻿namespace AppliedInformatics
+{
     class Program
     {
         /// <summary>
@@ -14,7 +7,7 @@ namespace AppliedInformatics
         /// </summary>
         static void Main(string[] args)
         {
-            
+
         }
     }
 }
