@@ -32,7 +32,7 @@ namespace AppliedInformatics.LaboratoryWork3
     ///         </item>
     ///     </list>
     /// </remarks>
-    class Graph
+    public class Graph
     {
 
         /// <summary>
@@ -71,13 +71,15 @@ namespace AppliedInformatics.LaboratoryWork3
 
         private SortedDictionary<int, Node> nodes;
 
+        private SortedDictionary<int, Node> Nodes { get => nodes; set => nodes = value; }
+
         /// <summary>
         ///     Конструктор класса 
         /// </summary>
 
         public Graph()
         {
-            this.nodes = new SortedDictionary<int, Node>();
+            this.Nodes = new SortedDictionary<int, Node>();
         }
 
         /// <summary>
@@ -91,7 +93,7 @@ namespace AppliedInformatics.LaboratoryWork3
         {
             try
             {
-                return this.nodes[id].FromHereToNodes.Keys;
+                return this.Nodes[id].FromHereToNodes.Keys;
             }
             catch (KeyNotFoundException)
             {
@@ -111,7 +113,7 @@ namespace AppliedInformatics.LaboratoryWork3
         {
             try
             {
-                return this.nodes[fromNode].FromHereToNodes[toNode];
+                return this.Nodes[fromNode].FromHereToNodes[toNode];
             }
             catch (KeyNotFoundException)
             {
@@ -129,7 +131,7 @@ namespace AppliedInformatics.LaboratoryWork3
         {
             try
             {
-                this.nodes[id] = new Node();
+                this.Nodes[id] = new Node();
             }
             catch (KeyNotFoundException)
             {
@@ -149,7 +151,7 @@ namespace AppliedInformatics.LaboratoryWork3
         {
             if (this.NodeIdCheck(id))
             {
-                foreach (Node n in this.nodes.Values)
+                foreach (Node n in this.Nodes.Values)
                 {
                     n.FromHereToNodes.Remove(id);
                 }
@@ -192,7 +194,7 @@ namespace AppliedInformatics.LaboratoryWork3
             if (!this.NodeIdCheck(toNode))
                 throw new ArgumentException("Неверное значение параметра toNode. В данном графе нет вершины с id: " + toNode);
 
-            this.nodes[fromNode].FromHereToNodes[toNode] = weight;
+            this.Nodes[fromNode].FromHereToNodes[toNode] = weight;
         }
 
         /// <summary>
@@ -206,7 +208,7 @@ namespace AppliedInformatics.LaboratoryWork3
 
         public void RemoveEdge(int fromNode, int toNode)
         {
-            this.nodes[fromNode].FromHereToNodes.Remove(toNode);
+            this.Nodes[fromNode].FromHereToNodes.Remove(toNode);
         }
 
         /// <summary>
@@ -217,7 +219,101 @@ namespace AppliedInformatics.LaboratoryWork3
 
         public bool NodeIdCheck(int id)
         {
-            return this.nodes.ContainsKey(id);
+            return this.Nodes.ContainsKey(id);
+        }
+    }
+
+    /// <summary>
+    ///     Сборник алгоритмов для графа
+    /// </summary>
+    public class GraphAlgorithms
+    {
+        /// <summary>
+        ///     Метод обхода графа BFS
+        /// </summary>
+        /// <param name="graph">Граф, который обходит алгоритм</param>
+        /// <param name="fromNode">Вершина, с которой начинается обход</param>
+        /// <returns>Итератор</returns>
+        public static IEnumerable<int> BFS(Graph graph, int fromNode)
+        {
+            Queue<int> queue = new Queue<int>();
+            HashSet<int> visited = new HashSet<int>();
+            int node;
+            queue.Enqueue(fromNode);
+            visited.Add(fromNode);
+            while (queue.Count > 0)
+            {
+                node = queue.Dequeue();
+                foreach (int n in graph.GetAdjacentNodes(node))
+                {
+                    if (!visited.Contains(n))
+                    {
+                        queue.Enqueue(n);
+                        visited.Add(n);
+                    }
+                }
+                yield return node;
+            }
+        }
+
+        /// <summary>
+        ///     Метод обхода графа DFS
+        /// </summary>
+        /// <param name="graph">Граф, который обходит алгоритм</param>
+        /// <param name="fromNode">Вершина, с которой начинается обход</param>
+        /// <returns>Итератор</returns>
+        public static IEnumerable<int> DFS(Graph graph, int fromNode)
+        {
+            Stack<int> stack = new Stack<int>();
+            HashSet<int> visited = new HashSet<int>();
+            int node;
+            stack.Push(fromNode);
+            while (stack.Count > 0)
+            {
+                node = stack.Pop();
+                if (!visited.Contains(node))
+                {
+                    visited.Add(node);
+                    foreach (int n in graph.GetAdjacentNodes(node))
+                    {
+                        if (!visited.Contains(n))
+                        {
+                            stack.Push(n);
+                        }
+                    }
+                    yield return node;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Алгоритм Дейекстры 
+        /// </summary>
+        /// <param name="graph">Граф, который обходит алгоритм</param>
+        /// <param name="fromNode">Вершина, с которой начинается обход</param>
+        /// <returns>Итератор</returns>
+        public static IEnumerable<int> Dijkstra(Graph graph, int fromNode)
+        {
+            Stack<int> stack = new Stack<int>();
+            HashSet<int> visited = new HashSet<int>();
+            int node;
+            stack.Push(fromNode);
+            while (stack.Count > 0)
+            {
+                node = stack.Pop();
+                if (!visited.Contains(node))
+                {
+                    visited.Add(node);
+                    foreach (int n in graph.GetAdjacentNodes(node))
+                    {
+                        if (!visited.Contains(n))
+                        {
+                            stack.Push(n);
+                        }
+                    }
+                    yield return node;
+                }
+            }
         }
     }
 }
