@@ -36,8 +36,9 @@ namespace AppliedInformatics.LaboratoryWork3
     {
 
         /// <summary>
-        ///     Класс <c>Node</c> используется для хранения данных об одной вершине.
+        ///     Класс <c>Node</c> используется для представления вершины. 
         /// </summary>
+
         private class Node
         {
             /// <summary>
@@ -47,17 +48,17 @@ namespace AppliedInformatics.LaboratoryWork3
             ///     Поле представлено в виде коллекции <see cref="SortedDictionary{TKey, TValue}"/>.
             ///     В данной реализации Key - вершина, в которую ведёт ребро, Value - вес ребра.
             /// </remarks>
-            public SortedDictionary<int, int> FromHereToNodes;
+            public SortedDictionary<int, ushort> FromHereToNodes;
             public Node()
             {
-                this.FromHereToNodes = new SortedDictionary<int, int>();
+                this.FromHereToNodes = new SortedDictionary<int, ushort>();
             }
             /// <summary>
             ///     Выводит в консоль данные о вершине 
             /// </summary>
             public void Display()
             {
-                foreach (KeyValuePair<int, int> i in this.FromHereToNodes)
+                foreach (KeyValuePair<int, ushort> i in this.FromHereToNodes)
                 {
                     Console.WriteLine("Ведёт в вершину " + i.Key.ToString() + ", вес ребра - " + i.Value.ToString());
                 }
@@ -65,10 +66,10 @@ namespace AppliedInformatics.LaboratoryWork3
         }
 
         /// <summary>
-        ///     Коллекция хранит информацию о вершинах по идентификаторам в <see cref="SortedDictionary{TKey, TValue}"/>
+        ///     Коллекция хранит информацию о вершинах в <see cref="SortedDictionary{TKey, TValue}"/> обращение осуществляется по пользовательским идентификаторам.
         /// </summary>
 
-        private SortedDictionary<int, Node> _nodes;
+        private SortedDictionary<int, Node> nodes;
 
         /// <summary>
         ///     Конструктор класса 
@@ -76,21 +77,64 @@ namespace AppliedInformatics.LaboratoryWork3
 
         public Graph()
         {
-            this._nodes = new SortedDictionary<int, Node>();
+            this.nodes = new SortedDictionary<int, Node>();
+        }
+
+        /// <summary>
+        /// Метод <c>GetAdjacentNodes</c> возвращает коллекцию вершин смежных с переданной
+        /// </summary>
+        /// <param name="id">Идентификатор вершины</param>
+        /// <exception cref="ArgumentException">Если вершины с переданным <paramref name="id"/> не существует</exception>
+        /// <returns>Коллекция смежных вершин для данной</returns>
+
+        public SortedDictionary<int, ushort>.KeyCollection GetAdjacentNodes(int id)
+        {
+            try
+            {
+                return this.nodes[id].FromHereToNodes.Keys;
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new ArgumentException("В данном графе нет вершины с id: " + id);
+            }
+        }
+
+        /// <summary>
+        ///     Метод <c>GetWeightEdge</c> возвращает вес ребра из вершины <paramref name="fromNode"/> к вершине <paramref name="toNode"/>
+        /// </summary>
+        /// <param name="fromNode">Вершина из которой выходит ребро</param>
+        /// <param name="toNode">Вершина в которую направлено ребро</param>
+        /// <exception cref="ArgumentException">Если вершины с переданным идентификатором не существует</exception>
+        /// <returns>Вес ребра</returns>
+
+        public ushort GetWeightEdge(int fromNode, int toNode)
+        {
+            try
+            {
+                return this.nodes[fromNode].FromHereToNodes[toNode];
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new ArgumentException("Нет вершины с таким идентификатором");
+            }
         }
 
         /// <summary>
         ///     Метод <c>AddNode</c> добавляет новую вершину с переданным идентификатором к графу
         /// </summary>
-        /// <exception cref="System.ArgumentException">Вызывается, если <paramref name="id"/> уже присутствует в графе</exception>
+        /// <exception cref="ArgumentException">Вызывается, если <paramref name="id"/> уже присутствует в графе</exception>
         /// <param name="id">Идентификатор вершины</param>
 
         public void AddNode(int id)
         {
-            if (this.NodeIdCheck(id))
+            try
+            {
+                this.nodes[id] = new Node();
+            }
+            catch (KeyNotFoundException)
+            {
                 throw new ArgumentException("В данном графе уже есть вершина с id: " + id);
-
-            this._nodes[id] = new Node();
+            }
         }
 
         /// <summary>
@@ -105,7 +149,7 @@ namespace AppliedInformatics.LaboratoryWork3
         {
             if (this.NodeIdCheck(id))
             {
-                foreach (Node n in this._nodes.Values)
+                foreach (Node n in this.nodes.Values)
                 {
                     n.FromHereToNodes.Remove(id);
                 }
@@ -148,7 +192,7 @@ namespace AppliedInformatics.LaboratoryWork3
             if (!this.NodeIdCheck(toNode))
                 throw new ArgumentException("Неверное значение параметра toNode. В данном графе нет вершины с id: " + toNode);
 
-            this._nodes[fromNode].FromHereToNodes[toNode] = weight;
+            this.nodes[fromNode].FromHereToNodes[toNode] = weight;
         }
 
         /// <summary>
@@ -162,10 +206,7 @@ namespace AppliedInformatics.LaboratoryWork3
 
         public void RemoveEdge(int fromNode, int toNode)
         {
-            if (this.NodeIdCheck(fromNode))
-            {
-                this._nodes[fromNode].FromHereToNodes.Remove(toNode);
-            }
+            this.nodes[fromNode].FromHereToNodes.Remove(toNode);
         }
 
         /// <summary>
@@ -176,7 +217,7 @@ namespace AppliedInformatics.LaboratoryWork3
 
         public bool NodeIdCheck(int id)
         {
-            return this._nodes.ContainsKey(id);
+            return this.nodes.ContainsKey(id);
         }
     }
 }
