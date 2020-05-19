@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AppliedInformatics.LaboratoryWork2
+namespace AppliedInformatics.LaboratoryWork1
 {
     /// <summary>
     /// <para>
@@ -39,13 +35,13 @@ namespace AppliedInformatics.LaboratoryWork2
     /// </list>
     /// </para>
     /// </summary>
-    class Matrix
+    public class Matrix
     {
 
         /// <summary>
         /// Поле для хранения элементов матрицы
         /// </summary>
-        
+
         private readonly double[,] matrix;
 
         /// <summary>
@@ -63,7 +59,7 @@ namespace AppliedInformatics.LaboratoryWork2
         /// <summary>
         /// Свойство, возвращающее информацию о количестве столбцов в матрице
         /// </summary>
-        
+
         public int CountColumns
         {
             get
@@ -77,7 +73,7 @@ namespace AppliedInformatics.LaboratoryWork2
         /// </summary>
         /// <param name="CountString">Количество строк</param>
         /// <param name="CountColumn">Количество столбцов в матрице</param>
-        
+
         public Matrix(int CountString, int CountColumn)
         {
             this.matrix = new double[CountString, CountColumn];
@@ -88,7 +84,7 @@ namespace AppliedInformatics.LaboratoryWork2
         /// </summary>
         /// <param name="i">Номер строки</param>
         /// <param name="j">Номер стобца</param>
-        
+
         public double this[int i, int j]
         {
             get
@@ -143,7 +139,7 @@ namespace AppliedInformatics.LaboratoryWork2
             if (left.CountColumns == right.CountStrings)
             {
                 Matrix multiplication = new Matrix(left.CountStrings, right.CountColumns);
-                
+
                 for (int i = 0; i < left.CountStrings; i++)
                 {
                     for (int j = 0; j < right.CountColumns; j++)
@@ -171,7 +167,7 @@ namespace AppliedInformatics.LaboratoryWork2
 
         public static Matrix TransposedMatrix(Matrix initial)
         {
-            Matrix transposed = new Matrix (initial.CountColumns, initial.CountStrings);
+            Matrix transposed = new Matrix(initial.CountColumns, initial.CountStrings);
 
             for (int i = 0; i < initial.CountStrings; i++)
             {
@@ -183,6 +179,27 @@ namespace AppliedInformatics.LaboratoryWork2
             return transposed;
         }
 
+        /// <summary>
+        /// Метод осуществляет копирование матрицы
+        /// </summary>
+        /// <param name="initial">Матрицы, которую нужно скопировать</param>
+        /// <returns>Скопированная матрица</returns>
+
+        public static Matrix CopyMatrix(Matrix initial)
+        {
+            Matrix copied = new Matrix(initial.CountStrings, initial.CountColumns);
+
+            for (int i = 0; i < initial.CountStrings; i++)
+            {
+                for (int j = 0; j < initial.CountColumns; j++)
+                {
+                    copied[i, j] = initial[i, j];
+                }
+            }
+
+            return copied;
+        }
+
         // Операции над элементами матрицы
 
         /// <summary>
@@ -191,7 +208,7 @@ namespace AppliedInformatics.LaboratoryWork2
         /// <param name="stringNumber">Номер делимой строки</param>
         /// <param name="divider">Делитель</param>
         /// 
-        
+
         public void DivideString(int stringNumber, double divider)
         {
             for (int i = 0; i < this.CountColumns; i++)
@@ -234,7 +251,7 @@ namespace AppliedInformatics.LaboratoryWork2
         /// <summary>
         /// Выводит матрицу в консоль
         /// </summary>
-        
+
         public void Display()
         {
             for (int i = 0; i < this.CountStrings; i++)

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AppliedInformatics;
 using AppliedInformatics.LaboratoryWork3;
+using AppliedInformatics.LaboratoryWork1;
+using AppliedInformatics.LaboratoryWork4;
 
 namespace CheckLaboratoryWork
 {
@@ -128,6 +130,67 @@ namespace CheckLaboratoryWork
             SortedDictionary<int, int> tryDijkstra = GraphAlgorithms.Dijkstra(SomeGraph, 1);
 
             CollectionAssert.AreEqual(correctDijkstraAnswer, tryDijkstra);
+        }
+    }
+
+    [TestClass]
+    public class LaboratoryWork4
+    {
+        /*
+         * 1 2 0
+         * 0 3 0
+         * 0 0 0
+         * 
+         * Rank = 2
+         */
+        [TestMethod]
+        public void RankTest1()
+        {
+            
+            Matrix SomeMatrix = new Matrix(3, 3);
+
+            int correctRank = 2;
+
+            SomeMatrix[0, 0] = 1;
+            SomeMatrix[0, 1] = 2;
+            SomeMatrix[0, 2] = 0;
+            SomeMatrix[1, 0] = 0;
+            SomeMatrix[1, 1] = 3;
+            SomeMatrix[1, 2] = 0;
+            SomeMatrix[2, 0] = 0;
+            SomeMatrix[2, 1] = 0;
+            SomeMatrix[2, 2] = 0;
+
+            Assert.AreEqual(correctRank, SomeMatrix.Rank());
+        }
+
+        /*
+         * 1 2 3
+         * 0 3 4
+         * 0 0 5
+         * 
+         * Rank = 3
+         */
+
+        [TestMethod]
+        public void RankTest2()
+        {
+
+            Matrix SomeMatrix = new Matrix(3, 3);
+
+            int correctRank = 3;
+
+            SomeMatrix[0, 0] = 1;
+            SomeMatrix[0, 1] = 2;
+            SomeMatrix[0, 2] = 3;
+            SomeMatrix[1, 0] = 0;
+            SomeMatrix[1, 1] = 3;
+            SomeMatrix[1, 2] = 4;
+            SomeMatrix[2, 0] = 0;
+            SomeMatrix[2, 1] = 0;
+            SomeMatrix[2, 2] = 5;
+
+            Assert.AreEqual(correctRank, SomeMatrix.Rank());
         }
     }
 }

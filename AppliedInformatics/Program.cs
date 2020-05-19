@@ -1,4 +1,6 @@
-﻿namespace AppliedInformatics
+﻿using System;
+
+namespace AppliedInformatics
 {
     class Program
     {

@@ -19,7 +19,7 @@ namespace AppliedInformatics.LaboratoryWork3
     ///             <description>O(log N)</description>
     ///         </item>
     ///         <item>
-    ///             <term>Добавление ребра (<see cref="AddEdge(int, int)"/>)</term>
+    ///             <term>Добавление ребра (<see cref="AddEdge(int, int, ushort)"/>)</term>
     ///             <description>O(log^2 N)</description>
     ///         </item>
     ///         <item>
@@ -164,34 +164,14 @@ namespace AppliedInformatics.LaboratoryWork3
         }
 
         /// <summary>
-        ///     Добавляет ориентированное ребро графа от <paramref name="fromNode"/> к <paramref name="toNode"/> c нулевым весом
-        ///     Если ребро уже существует, то вес будет перезаписан на новый.
-        /// </summary>
-        /// <param name="fromNode">Вершина из которой выходит ребро</param>
-        /// <param name="toNode">Вершина в которую направлено ребро</param>
-
-        public void AddEdge(int fromNode, int toNode)
-        {
-            try
-            {
-                this.AddEdge(fromNode, toNode, 0);
-            }
-            catch (ArgumentException err)
-            {
-                throw err;
-            }
-
-        }
-
-        /// <summary>
-        ///     Добавляет ориентированное ребро графа от <paramref name="fromNode"/> к <paramref name="toNode"/> c весом <paramref name="weight"/>.
+        ///     Добавляет ориентированное ребро графа от <paramref name="fromNode"/> к <paramref name="toNode"/> c весом <paramref name="weight"/> (0 по умолчанию).
         ///     Если ребро уже существует, то вес будет перезаписан на новый.
         /// </summary>
         /// <param name="fromNode">Вершина из которой выходит ребро</param>
         /// <param name="toNode">Вершина в которую направлено ребро</param>
         /// <param name="weight">Вес ребра</param>
 
-        public void AddEdge(int fromNode, int toNode, ushort weight)
+        public void AddEdge(int fromNode, int toNode, ushort weight = 0)
         {
             if (!this.NodeIdCheck(fromNode))
                 throw new ArgumentException("Неверное значение параметра fromNode. В данном графе нет вершины с id: " + fromNode);
