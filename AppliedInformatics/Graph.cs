@@ -5,26 +5,29 @@ using System.Linq;
 namespace AppliedInformatics.LaboratoryWork3
 {
     /// <summary>
+    /// <para>
     ///     Класс<c> Graph</c> используется для хранения данных о вершинах и рёбрах графа.
+    /// </para>
+    /// <para>
     ///     В данной реализации поддерживаются только ориентированные взвешенные рёбра (по умолчанию вес ребра - 0).
-    /// </summary>
-    /// <remarks>
+    /// </para>
+    /// <para>
     ///     Особенности хранения графа обеспечивают следующую сложность для базовых операций:
     ///     <list type="table">
     ///         <item>
-    ///             <term>Добавление вершины (AddNode)</term>
+    ///             <term>Добавление вершины (<see cref="AddNode(int)"/>)</term>
     ///             <description>O(log N)</description>
     ///         </item>
     ///         <item>
-    ///             <term>Добавление ребра (AddEdge)</term>
+    ///             <term>Добавление ребра (<see cref="AddEdge(int, int)"/>)</term>
     ///             <description>O(log^2 N)</description>
     ///         </item>
     ///         <item>
-    ///             <term>Удаление вершины (RemoveNode)</term>
+    ///             <term>Удаление вершины (<see cref="RemoveNode(int)"/>)</term>
     ///             <description>O(NlogN)</description>
     ///         </item>
     ///         <item>
-    ///             <term>Удаление ребра (RemoveEdge)</term>
+    ///             <term>Удаление ребра (<see cref="RemoveEdge(int, int)"/>)</term>
     ///             <description>O(log^2 N)</description>
     ///         </item>
     ///         <item>
@@ -32,7 +35,8 @@ namespace AppliedInformatics.LaboratoryWork3
     ///             <description>O(log^2 N)</description>
     ///         </item>
     ///     </list>
-    /// </remarks>
+    ///     </para>
+    /// </summary>
     public class Graph
     {
 
