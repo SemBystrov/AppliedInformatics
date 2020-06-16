@@ -1,6 +1,9 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -34,7 +37,7 @@ namespace AppliedInformatics.LaboratoryWork4
         /// Конструктор класса принимает в себя количество переменных и массив строк, содержащих уравнения системы вида <c>2x1+4x2=6</c>
         /// </summary>
         /// <param name="CountX">Количество переменных</param>
-        /// <param name="equations">Массив строк вида <c>"2x1+4x2=6"</c></param>
+        /// <param name="equations">Массив строк вида <c>"2x0+1x1=6"</c></param>
         public LinearSystem(int CountX, string[] equations)
         {
             this.A = new Matrix(equations.Length, CountX);
@@ -53,8 +56,6 @@ namespace AppliedInformatics.LaboratoryWork4
 
                 parse = parse[0].Split('+');
 
-                
-
                 for (int j = 0; j < parse.Length; j++)
                 {
                     string[] x;
@@ -67,35 +68,80 @@ namespace AppliedInformatics.LaboratoryWork4
         }
 
         /// <summary>
+        /// Конструктор класса, принимающий расширенную матрицу системы
+        /// </summary>
+        /// <param name="extendedA">расширенная матрица системы</param>
+        public LinearSystem(Matrix extendedA)
+        {
+            this.A = extendedA.Slice(0, 0, extendedA.CountStrings - 1, extendedA.CountColumns - 2);
+            this.B = extendedA.Slice(0, extendedA.CountColumns - 1, extendedA.CountStrings - 1, extendedA.CountColumns - 1);
+        }
+        /// <summary>
         /// Реализация метода Гаусса для нахождения решения СЛАУ
         /// </summary>
         /// <returns></returns>
-        public string[] SolutionGaussMethod()
+        public Matrix SolutionGaussMethod()
         {
             int rankA, rankE;
+            
+            Matrix extendedA = this.A.Concatenation(B); // Расширенная матрица
 
-            rankA = this.A.Rank();
-            rankE = this.A.Concatenation(B).Rank();
+            rankA = this.A.Rank(); // Ранг характеристической матрицы
+            rankE = extendedA.Rank(); // Ранг расширенной матрицы
             
             if (rankA == rankE)
             {
-                if (rankA == A.CountColumns)
-                {
-                    //  todo: поиск единственного решения СЛАУ
+                Matrix triangularExA = extendedA.GetTriangularMatrix(); // Треугольный вид расширенной матрицы
+                Matrix coefDependetVar = triangularExA.Slice(0, 0, rankA - 1, rankA - 1); // Коэффициенты при зависимых переменных
+                Matrix ans;
+
+                if (rankA != this.A.CountColumns) {
+
+                    // Бесконечное множество решений, 
+                    // в ответе для каждой зависимой переменной будут переданы соответствующие коэффициенты независимых пременных и в последнем столбце - свободные члены 
+
+                    Matrix coefIndependetVar = triangularExA.Slice(0, rankA, rankA - 1, A.CountColumns - 1);  // Коэффициенты при независимых переменных
+                    
+                    // Переносим в правую часть уравнения со знаком минус
+                    for (int i = 0; i < coefIndependetVar.CountStrings; i++)
+                        coefIndependetVar.DivideString(i, -1);
+
+                    // Объединяем со столбцом свободных членов
+                    ans = coefIndependetVar.Concatenation(triangularExA.Slice(0, A.CountColumns, rankA - 1, A.CountColumns)); // Объединяю с свободными членами
                 }
                 else
                 {
-                    //  todo: поиск множества решений СЛАУ
+                    // Система имеет единственное решение
+
+                    ans = triangularExA.Slice(0, A.CountColumns, rankA - 1, A.CountColumns);
                 }
+
+                for (int i = rankA - 1; i >= 0; i--)
+                {
+
+                    double divider = coefDependetVar[i, i];
+
+                    ans.DivideString(i, divider);
+
+                    // Подставляю найденное значения в другие уравнения
+
+                    for (int j = i - 1; j >= 0; j--)
+                    {
+                        if (coefDependetVar[j, i] != 0)
+                        {
+                            ans.DivideString(i, 1 / coefDependetVar[j, i]);
+                            ans.SubtractionStrings(j, i);
+                            ans.DivideString(i, coefDependetVar[j, i]);
+                        }
+                    }
+                }
+
+                return ans;
             }
             else
             {
                 throw new IncompatibleSystemException();
             }
-            
-                
-            return new string[0];
-
         }
     }
 
@@ -171,10 +217,10 @@ namespace AppliedInformatics.LaboratoryWork4
             Matrix triangular = Matrix.CopyMatrix(initial);
 
             int skipped = 0;
-            for (int i = 0; i < triangular.CountColumns - 1; i++)
+            for (int i = 0; i < Math.Min(triangular.CountColumns, triangular.CountStrings) - 1; i++)
             {
                 int substrahendString = i - skipped;
-
+                
                 /* 
                  * Поиск ненулевого элемента из множества { элемент главной диагонали и находящиеся под ним }.
                  * 
@@ -268,9 +314,9 @@ namespace AppliedInformatics.LaboratoryWork4
                     for (int j = 0; j < initial.CountColumns; j++)
                         value[i, j] = initial[i, j];
 
-                for (int i = initial.CountStrings; i < initial.CountStrings + concatenated.CountStrings; i++)
-                    for (int j = 0; j < concatenated.CountColumns; j++)
-                        value[i, j] = concatenated[i - initial.CountStrings, j];
+                for (int i = 0; i < initial.CountStrings; i++)
+                    for (int j = initial.CountColumns; j < initial.CountColumns + concatenated.CountColumns; j++)
+                        value[i, j] = concatenated[i, j - initial.CountColumns];
 
                 return value;
             }
@@ -282,6 +328,33 @@ namespace AppliedInformatics.LaboratoryWork4
 
         }
     
-    
+        /// <summary>
+        /// Метод Slice возвращает необходимую часть матрицы.
+        /// </summary>
+        /// <param name="initial">Исходная матрица</param>
+        /// <param name="stringStart">Верхняя граница</param>
+        /// <param name="columnStart">Левая граница</param>
+        /// <param name="stringEnd">Нижняя граница</param>
+        /// <param name="columnEnd">Правая граница</param>
+        /// <returns>Часть матрицы, ограниценная заданными строками и столбцами</returns>
+        public static Matrix Slice(this Matrix initial, int stringStart, int columnStart, int stringEnd, int columnEnd)
+        {
+            if (((stringStart <= stringEnd) && (stringEnd < initial.CountStrings)) && ((columnStart <= columnEnd) && (columnEnd < initial.CountColumns)))
+            {
+                Matrix sliceInitial = new Matrix(stringEnd - stringStart + 1, columnEnd - columnStart + 1);
+                for (int i = stringStart; i <= stringEnd; i++)
+                {
+                    for (int j = columnStart; j <= columnEnd; j++)
+                    {
+                        sliceInitial[i - stringStart, j - columnStart] = initial[i, j];
+                    }
+                }
+                return sliceInitial;
+            }
+            else
+            {
+                throw new ArgumentException("Неверно указаны границы");
+            }
+        }
     }
 }

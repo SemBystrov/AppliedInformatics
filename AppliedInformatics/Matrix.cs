@@ -220,7 +220,7 @@ namespace AppliedInformatics.LaboratoryWork1
         /// <summary>
         /// Вычитает из строки другую строку
         /// </summary>
-        /// <param name="minuendString">Номер уменьшаемое строки</param>
+        /// <param name="minuendString">Номер уменьшаемой строки</param>
         /// <param name="substrahendString">Номер вычитаемой строки</param>
 
         public void SubtractionStrings(int minuendString, int substrahendString)

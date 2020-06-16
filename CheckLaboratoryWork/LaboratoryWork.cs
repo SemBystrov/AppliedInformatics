@@ -5,11 +5,13 @@ using AppliedInformatics;
 using AppliedInformatics.LaboratoryWork3;
 using AppliedInformatics.LaboratoryWork1;
 using AppliedInformatics.LaboratoryWork4;
+using AppliedInformatics.LaboratoryWork5;
+using System.Runtime.CompilerServices;
 
 namespace CheckLaboratoryWork
 {
     [TestClass]
-    public class LaboratoryWork3
+    public class LaboratoryWork
     {
         [TestMethod]
         public void BFSTest1()
@@ -191,6 +193,157 @@ namespace CheckLaboratoryWork
             SomeMatrix[2, 2] = 5;
 
             Assert.AreEqual(correctRank, SomeMatrix.Rank());
+        }
+
+        [TestMethod]
+        public void RankTest3()
+        {
+
+            Matrix SomeMatrix = new Matrix(2, 3);
+
+            int correctRank = 1;
+
+            SomeMatrix[0, 0] = 1;
+            SomeMatrix[0, 1] = 2;
+            SomeMatrix[0, 2] = 6;
+            SomeMatrix[1, 0] = 2;
+            SomeMatrix[1, 1] = 4;
+            SomeMatrix[1, 2] = 12;
+
+            Assert.AreEqual(correctRank, SomeMatrix.Rank());
+        }
+
+        [TestMethod]
+        public void LinearSystemSolutionTest1()
+        {
+            int countX = 2;
+            string[] eq = { "2x0+1x1=3", "4x0+1x1=5" };
+
+            LinearSystem LS = new LinearSystem(countX, eq);
+
+            Matrix ans = LS.SolutionGaussMethod();
+
+            Matrix correctAns = new Matrix(2, 1);
+            correctAns[0, 0] = 1;
+            correctAns[1, 0] = 1;
+
+            for (int i = 0; i < 2; i++) {
+                Assert.AreEqual(correctAns[i, 0], ans[i, 0]);
+            }
+            
+        }
+
+        [TestMethod]
+        public void LinearSystemSolutionTest2()
+        {
+            int countX = 3;
+            string[] eq = { "1x0+1x1+1x2=6", "1x0+2x1+0x2=5", "0x0+1x1+2x2=8" };
+
+            LinearSystem LS = new LinearSystem(countX, eq);
+
+            Matrix ans = LS.SolutionGaussMethod();
+
+            Matrix correctAns = new Matrix(3, 1);
+            correctAns[0, 0] = 1;
+            correctAns[1, 0] = 2;
+            correctAns[2, 0] = 3;
+
+            for (int i = 0; i < 3; i++)
+            {
+                Assert.AreEqual(correctAns[i, 0], ans[i, 0]);
+            }
+
+        }
+
+        [TestMethod]
+        public void LinearSystemSolutionTest3()
+        {
+            int countX = 2;
+            string[] eq = { "1x0+2x1=6", "2x0+4x1=12" };
+
+            LinearSystem LS = new LinearSystem(countX, eq);
+
+            Matrix ans = LS.SolutionGaussMethod();
+
+            Matrix correctAns = new Matrix(1, 2);
+            correctAns[0, 0] = -2;
+            correctAns[0, 1] = 6;
+
+            for (int i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(correctAns[0, i], ans[0, i]);
+            }
+        }
+    }
+
+    [TestClass]
+    public class LaboratoryWork5
+    {
+        // Тест от друга 
+
+        public Matrix SystemTest1(Matrix X)
+        {
+            double x1 = X[0, 0];
+            double x2 = X[1, 0];
+            Matrix result = new Matrix(X.CountStrings, X.CountColumns);
+            result[0, 0] = 0.1 * x1 * x1 + x1 + 0.2 * x2 * x2 - 0.3;
+            result[1, 0] = 0.2 * x1 * x1 + x2 - 0.1 * x1 * x2 - 0.7;
+            return result;
+        }
+
+        [TestMethod]
+        public void NewtonTest1()
+        {
+            Matrix X = new Matrix(2, 1);
+            X[0, 0] = 3;
+            X[1, 0] = 1;
+
+            NonLinearSystem.Fx systemTest = SystemTest1;
+
+            NonLinearSystem someSystem = new NonLinearSystem(systemTest);
+
+            X = someSystem.SolutionNewton(X, 0.00000001);
+
+            Matrix rightAnswer = new Matrix(2, 1);
+
+            rightAnswer[0, 0] = 0.1964115066987255;
+            rightAnswer[1, 0] = 0.7061541850402057;
+
+            Assert.AreEqual(rightAnswer[0, 0], X[0, 0], 0.00000001);
+            Assert.AreEqual(rightAnswer[1, 0], X[1, 0], 0.00000001);
+        }
+
+        // Собственный тест 
+        public Matrix SystemTest2(Matrix X)
+        {
+            double x1 = X[0, 0];
+            double x2 = X[1, 0];
+            Matrix result = new Matrix(X.CountStrings, X.CountColumns);
+            result[0, 0] = x1 + x2 - 8;
+            result[1, 0] = x1 * x1 + x2 * x2 - 82;
+            return result;
+        }
+
+        [TestMethod]
+        public void NewtonTest2()
+        {
+            Matrix X = new Matrix(2, 1);
+            X[0, 0] = 1;
+            X[1, 0] = 8;
+
+            NonLinearSystem.Fx systemTest = SystemTest2;
+
+            NonLinearSystem someSystem = new NonLinearSystem(systemTest);
+
+            X = someSystem.SolutionNewton(X, 0.1);
+
+            Matrix rightAnswer = new Matrix(2, 1);
+
+            rightAnswer[0, 0] = -1;
+            rightAnswer[1, 0] = 9;
+
+            Assert.AreEqual(rightAnswer[0, 0], X[0, 0], 0.1);
+            Assert.AreEqual(rightAnswer[1, 0], X[1, 0], 0.1);
         }
     }
 }
