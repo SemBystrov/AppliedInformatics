@@ -6,6 +6,8 @@ using AppliedInformatics.LaboratoryWork3;
 using AppliedInformatics.LaboratoryWork1;
 using AppliedInformatics.LaboratoryWork4;
 using AppliedInformatics.LaboratoryWork5;
+using AppliedInformatics.LaboratoryWork6;
+using AppliedInformatics.LaboratoryWork7;
 using System.Runtime.CompilerServices;
 
 namespace CheckLaboratoryWork
@@ -344,6 +346,125 @@ namespace CheckLaboratoryWork
 
             Assert.AreEqual(rightAnswer[0, 0], X[0, 0], 0.1);
             Assert.AreEqual(rightAnswer[1, 0], X[1, 0], 0.1);
+        }
+    }
+
+    [TestClass]
+    public class LaboratoryWork6
+    {
+        // Тест от друга 
+
+        public double EquationTest1(Matrix YX)
+        {
+            double y = YX[0, 0];
+            double x = YX[1, 0];
+            return y * Math.Cos(x);
+        }
+
+        [TestMethod]
+        public void RungeKutta4Test1()
+        {
+            Matrix YX = new Matrix(2, 1);
+            YX[0, 0] = 1;
+            YX[1, 0] = 0;
+            double h0 = 2.5;
+            double m = 10;
+
+            DifferentialEquation.Fx equationTest = EquationTest1;
+
+            DifferentialEquation someEquation = new DifferentialEquation(equationTest);
+
+            Matrix newYX = someEquation.SolutionRungeKutta4(YX, h0, m);
+
+            Matrix rightAnswer = new Matrix(2, 1);
+
+            rightAnswer[0, 0] = 1.81930573495;
+            rightAnswer[1, 0] = 2.5;
+
+            Assert.AreEqual(rightAnswer[0, 0], newYX[0, 0], 0.00000001);
+            Assert.AreEqual(rightAnswer[1, 0], newYX[1, 0], 0.00000001);
+        }
+
+        // Собственный тест 
+    }
+
+    [TestClass]
+    public class LaboratoryWork7
+    {
+        // Тест от друга 
+
+        public double EquationTest1(Matrix YX)
+        {
+            double y = YX[0, 0];
+            double x = YX[1, 0];
+            return y * Math.Cos(x);
+        }
+
+        [TestMethod]
+        public void RungeKutta4Test1()
+        {
+            Matrix YX = new Matrix(2, 1);
+            YX[0, 0] = 1;
+            YX[1, 0] = 0;
+            double h0 = 2.5;
+            double m = 10;
+
+            DifferentialSystem.Fx[] equationTest = { EquationTest1 };
+
+            DifferentialSystem someEquation = new DifferentialSystem(equationTest);
+
+            Matrix newYX = someEquation.SolutionRungeKutta4(YX, h0, m);
+
+            Matrix rightAnswer = new Matrix(2, 1);
+
+            rightAnswer[0, 0] = 1.81930573495;
+            rightAnswer[1, 0] = 2.5;
+
+            Assert.AreEqual(rightAnswer[0, 0], newYX[0, 0], 0.001);
+            Assert.AreEqual(rightAnswer[1, 0], newYX[1, 0], 0.001);
+        }
+
+        // Собственный тест
+
+        public double EquationTest2(Matrix YX)
+        {
+            double y = YX[0, 0];
+            double y2 = YX[1, 0];
+            return -2 * y + 4 * y2;
+        }
+
+        public double EquationTest3(Matrix YX)
+        {
+            double y = YX[0, 0];
+            double y2 = YX[1, 0];
+            return 3 * y2 - y;
+        }
+
+        [TestMethod]
+        public void RungeKutta4Test2()
+        {
+            Matrix YX = new Matrix(3, 1);
+            YX[0, 0] = -6;
+            YX[1, 0] = -3;
+            YX[2, 0] = 0;
+            double h0 = 1;
+            double m = 10;
+
+            DifferentialSystem.Fx[] equationTest = { EquationTest2, EquationTest3 };
+
+            DifferentialSystem someEquation = new DifferentialSystem(equationTest);
+
+            Matrix newYX = someEquation.SolutionRungeKutta4(YX, h0, m);
+
+            Matrix rightAnswer = new Matrix(3, 1);
+
+            rightAnswer[0, 0] = -16.2496299625;
+            rightAnswer[1, 0] = -15.1459916390; 
+            rightAnswer[2, 0] = 1;
+
+            Assert.AreEqual(rightAnswer[0, 0], newYX[0, 0], 0.001);
+            Assert.AreEqual(rightAnswer[1, 0], newYX[1, 0], 0.001);
+            Assert.AreEqual(rightAnswer[2, 0], newYX[2, 0], 0.001);
         }
     }
 }

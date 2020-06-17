@@ -63,6 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DifferentialEquation.cs" />
+    <Compile Include="DifferentialSystem.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="LinearSystem.cs" />
     <Compile Include="Matrix.cs" />
